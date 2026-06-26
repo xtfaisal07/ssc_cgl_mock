@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSC CGL Tier-I Mock Test</title>
+<style>
+  :root{
+    --navy:#0f2a4a;
+    --navy-dark:#0a1d35;
+    --blue:#1e5ba8;
+    --blue-light:#3b82c4;
+    --gold:#d4a437;
+    --green:#1f9d55;
+    --red:#d6453d;
+    --gray-bg:#f4f6f9;
+    --card-bg:#ffffff;
+    --border:#dde3ea;
+    --text:#1c2733;
+    --text-mut:#5b6b7c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:var(--gray-bg);
+    color:var(--text);
+  }
+  .app{max-width:1100px;margin:0 auto;padding:0 16px 60px;}
+
+  /* ---------- HEADER ---------- */
+  .topbar{
+    background:linear-gradient(135deg,var(--navy) 0%, var(--navy-dark) 100%);
+    color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 2px 10px rgba(0,0,0,0.15);
+  }
+  .topbar .brand{display:flex;align-items:center;gap:10px;}
+  .topbar .brand .badge{
+    background:var(--gold);color:var(--navy-dark);font-weight:800;border-radius:6px;
+    padding:5px 10px;font-size:13px;letter-spacing:0.5px;
+  }
+  .topbar .brand h1{font-size:17px;margin:0;font-weight:700;}
+  .topbar .brand small{display:block;font-size:11px;color:#cfe0f5;font-weight:400;}
+  .timer-pill{
+    background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);
+    border-radius:30px;padding:7px 16px;font-weight:700;font-size:15px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .timer-pill.warn{background:#fff3e0;color:#b25400;border-color:#ffb74d;}
+  .timer-pill.danger{background:#ffe3e1;color:var(--red);border-color:#ff9a92;animation:pulse 1s infinite;}
+  @keyframes pulse{0%{opacity:1}50%{opacity:0.55}100%{opacity:1}}
+
+  /* ---------- HOME / SELECT SCREEN ---------- */
+  .home-hero{
+    text-align:center;padding:40px 20px 10px;
+  }
+  .home-hero h2{font-size:28px;margin:0 0 6px;color:var(--navy);}
+  .home-hero p{color:var(--text-mut);font-size:15px;margin:0 0 26px;}
+
+  .paper-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:10px;
+  }
+  .paper-card{
+    background:var(--card-bg);border:1px solid var(--border);border-radius:14px;
+    padding:22px;box-shadow:0 2px 8px rgba(20,40,70,0.06);
+    transition:transform .15s, box-shadow .15s;display:flex;flex-direction:column;gap:10px;
+  }
+  .paper-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(20,40,70,0.12);}
+  .paper-card .ptag{
+    align-self:flex-start;background:var(--blue);color:#fff;font-size:11px;font-weight:700;
+    padding:4px 10px;border-radius:20px;letter-spacing:.5px;
+  }
+  .paper-card h3{margin:0;font-size:17px;color:var(--navy);}
+  .paper-card .meta{font-size:13px;color:var(--text-mut);line-height:1.5;}
+  .paper-card .stats{display:flex;gap:14px;font-size:12px;color:var(--text-mut);margin-top:4px;}
+  .paper-card .stats b{color:var(--navy);}
+  .btn{
+    border:none;border-radius:8px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:var(--navy);}
+  .btn-gold{background:var(--gold);color:var(--navy-dark);}
+  .btn-gold:hover{background:#c2932c;}
+  .btn-outline{background:transparent;border:1.5px solid var(--blue);color:var(--blue);}
+  .btn-outline:hover{background:#eaf2fb;}
+  .btn-ghost{background:transparent;color:var(--text-mut);border:1px solid var(--border);}
+  .btn-ghost:hover{background:#eef1f5;}
+  .btn-danger{background:var(--red);color:#fff;}
+  .btn-danger:hover{background:#b8362f;}
+  .btn-block{width:100%;}
+
+  .rules-box{
+    background:#fff8e6;border:1px solid #f0d68a;border-radius:10px;padding:16px 18px;margin:26px 0;
+    font-size:13.5px;color:#6b5316;
+  }
+  .rules-box h4{margin:0 0 8px;color:#8a6a1d;font-size:14px;}
+  .rules-box ul{margin:0;padding-left:20px;line-height:1.7;}
+
+  /* ---------- INSTRUCTIONS MODAL-ish PANEL ---------- */
+  .instructions-panel{
+    background:var(--card-bg);border:1px solid var(--border);border-radius:14px;
+    padding:28px 30px;margin:24px auto;max-width:680px;box-shadow:0 4px 16px rgba(20,40,70,0.08);
+  }
+  .instructions-panel h2{color:var(--navy);margin-top:0;}
+  .instructions-panel ol{line-height:1.9;font-size:14.5px;padding-left:22px;}
+  .instructions-panel .marks-row{display:flex;gap:14px;margin:18px 0;flex-wrap:wrap;}
+  .mark-chip{flex:1;min-width:120px;border-radius:10px;padding:14px;text-align:center;font-weight:700;}
+  .mark-chip.correct{background:#e6f7ec;color:var(--green);}
+  .mark-chip.incorrect{background:#fdeceb;color:var(--red);}
+  .mark-chip.skip{background:#eef1f5;color:var(--text-mut);}
+  .mark-chip span{display:block;font-size:22px;margin-bottom:4px;}
+
+  /* ---------- EXAM LAYOUT ---------- */
+  .exam-wrap{display:flex;gap:18px;margin-top:18px;align-items:flex-start;}
+  .exam-main{flex:1;min-width:0;}
+  .exam-side{width:270px;flex-shrink:0;}
+
+  .qcard{
+    background:var(--card-bg);border:1px solid var(--border);border-radius:14px;
+    padding:24px 26px;box-shadow:0 2px 8px rgba(20,40,70,0.05);min-height:380px;display:flex;flex-direction:column;
+  }
+  .qcard .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .qcard .qnum{
+    background:var(--navy);color:#fff;border-radius:8px;padding:5px 12px;font-weight:700;font-size:13px;
+  }
+  .qcard .section-tag{
+    background:#eef3fa;color:var(--blue);font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;
+  }
+  .qcard .qtext{font-size:16px;line-height:1.65;white-space:pre-line;margin-bottom:18px;color:var(--text);}
+  .options{display:flex;flex-direction:column;gap:10px;flex:1;}
+  .option{
+    display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--border);border-radius:10px;
+    padding:12px 14px;cursor:pointer;transition:border-color .12s, background .12s;font-size:15px;line-height:1.5;
+  }
+  .option:hover{border-color:var(--blue-light);background:#f7fafd;}
+  .option.selected{border-color:var(--blue);background:#eaf2fb;font-weight:600;}
+  .option .optlabel{
+    width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;
+    color:var(--text-mut);background:#fff;
+  }
+  .option.selected .optlabel{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  /* review mode coloring */
+  .option.correct-ans{border-color:var(--green);background:#eaf8ef;}
+  .option.correct-ans .optlabel{background:var(--green);color:#fff;border-color:var(--green);}
+  .option.wrong-ans{border-color:var(--red);background:#fdecec;}
+  .option.wrong-ans .optlabel{background:var(--red);color:#fff;border-color:var(--red);}
+
+  .qfooter{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;flex-wrap:wrap;}
+  .qfooter .left-actions{display:flex;gap:10px;}
+  .qfooter .nav-actions{display:flex;gap:10px;}
+
+  /* Sidebar */
+  .side-card{
+    background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:18px;
+    box-shadow:0 2px 8px rgba(20,40,70,0.05);margin-bottom:16px;
+  }
+  .side-card h4{margin:0 0 12px;font-size:13.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.3px;}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;margin-bottom:12px;color:var(--text-mut);}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .legend .dot{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .dot.ans{background:var(--green);} .dot.notans{background:var(--red);}
+  .dot.skipped{background:#d0d6dd;} .dot.notvisited{background:#fff;border:1px solid var(--border);}
+  .qgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-height:340px;overflow-y:auto;padding-right:2px;}
+  .qgrid .gcell{
+    aspect-ratio:1;border-radius:6px;border:1px solid var(--border);background:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;
+    color:var(--text-mut);
+  }
+  .gcell.current{outline:2px solid var(--navy);outline-offset:1px;}
+  .gcell.answered{background:var(--green);color:#fff;border-color:var(--green);}
+  .gcell.skipped{background:#d0d6dd;color:#4a4a4a;border-color:#d0d6dd;}
+  .gcell.notvisited{background:#fff;color:var(--text-mut);}
+
+  .submit-zone{margin-top:6px;}
+  .summary-mini{font-size:12.5px;color:var(--text-mut);line-height:1.6;margin-top:6px;}
+  .summary-mini b{color:var(--navy);}
+
+  /* ---------- RESULTS ---------- */
+  .results-hero{
+    background:linear-gradient(135deg,var(--navy) 0%, var(--blue) 100%);color:#fff;border-radius:16px;
+    padding:32px;margin-top:20px;text-align:center;
+  }
+  .results-hero h2{margin:0 0 4px;font-size:24px;}
+  .results-hero .score-big{font-size:48px;font-weight:800;margin:10px 0;color:var(--gold);}
+  .results-hero .score-sub{font-size:14px;color:#d8e6f7;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:24px;}
+  .stat-box{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+  .stat-box .num{font-size:24px;font-weight:800;color:var(--navy);}
+  .stat-box .lab{font-size:12px;color:var(--text-mut);margin-top:4px;}
+  .stat-box.green .num{color:var(--green);}
+  .stat-box.red .num{color:var(--red);}
+  .stat-box.gray .num{color:var(--text-mut);}
+
+  .section-breakdown{margin-top:26px;}
+  .section-breakdown h3{color:var(--navy);font-size:16px;margin-bottom:12px;}
+  .sb-row{
+    display:grid;grid-template-columns:1.6fr 0.7fr 0.7fr 0.7fr 0.9fr;gap:10px;padding:12px 14px;
+    background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:13.5px;align-items:center;
+  }
+  .sb-row.head{background:var(--gray-bg);font-weight:700;color:var(--navy-dark);font-size:12px;text-transform:uppercase;}
+  .sb-row .c{color:var(--green);font-weight:700;} .sb-row .w{color:var(--red);font-weight:700;}
+
+  .review-toolbar{
+    display:flex;justify-content:space-between;align-items:center;margin:30px 0 14px;flex-wrap:wrap;gap:10px;
+  }
+  .review-toolbar h3{margin:0;color:var(--navy);}
+  .filter-pills{display:flex;gap:8px;flex-wrap:wrap;}
+  .fpill{
+    border:1px solid var(--border);background:#fff;border-radius:20px;padding:6px 14px;font-size:12.5px;
+    cursor:pointer;color:var(--text-mut);font-weight:600;
+  }
+  .fpill.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  .review-card{
+    background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;
+  }
+  .review-card .rh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .review-card .rtag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;}
+  .rtag.correct{background:#e6f7ec;color:var(--green);}
+  .rtag.incorrect{background:#fdeceb;color:var(--red);}
+  .rtag.skipped{background:#eef1f5;color:var(--text-mut);}
+  .review-card .rq{font-size:14.5px;white-space:pre-line;margin-bottom:10px;}
+  .review-card .ranswers{font-size:13.5px;display:flex;flex-direction:column;gap:5px;}
+  .review-card .ranswers .ra{padding:6px 10px;border-radius:6px;}
+  .ranswers .ra.your-correct{background:#e6f7ec;color:#175c33;}
+  .ranswers .ra.your-wrong{background:#fdeceb;color:#8a2a25;text-decoration:line-through;}
+  .ranswers .ra.right{background:#e6f7ec;color:#175c33;}
+  .ranswers .ra.notmarked{color:var(--text-mut);font-style:italic;}
+
+  .hidden{display:none !important;}
+
+  footer.endnote{text-align:center;color:var(--text-mut);font-size:12px;margin-top:30px;}
+
+  @media (max-width:760px){
+    .exam-wrap{flex-direction:column;}
+    .exam-side{width:100%;}
+    .qgrid{grid-template-columns:repeat(7,1fr);max-height:none;}
+    .topbar h1{font-size:14px;}
+    .sb-row{grid-template-columns:1.4fr repeat(4,1fr);font-size:12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="badge">SSC</span>
+    <div>
+      <h1 id="topTitle">SSC CGL Tier-I Mock Test</h1>
+      <small id="topSub">Practice • Analyse • Improve</small>
+    </div>
+  </div>
+  <div id="timerWrap" class="hidden">
+    <div class="timer-pill" id="timerPill">⏱ 60:00</div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ================= SCREEN 1: HOME / PAPER SELECT ================= -->
+  <div id="screen-home">
+    <div class="home-hero">
+      <h2>Choose Your SSC CGL Tier-I Mock Paper</h2>
+      <p>Full-length 100-question papers from actual solved SSC CGL Tier-I exams. Timed exactly like the real test.</p>
+    </div>
+
+    <div class="paper-grid" id="paperGrid"></div>
+
+    <div class="rules-box">
+      <h4>📋 Exam Pattern &amp; Marking Scheme</h4>
+      <ul>
+        <li><b>Duration:</b> 60 minutes (1 hour) — fixed for every mock, regardless of paper.</li>
+        <li><b>Questions:</b> 100 (4 sections × 25 questions each).</li>
+        <li><b>Marking:</b> <b>+2</b> for every correct answer, <b>−0.5</b> for every incorrect answer, <b>0</b> for unattempted/skipped questions.</li>
+        <li>You can navigate freely between questions, mark them for review, and change answers any time before submitting.</li>
+        <li>The test auto-submits the moment the timer hits zero.</li>
+      </ul>
+    </div>
+
+    <footer class="endnote">Built for personal practice • Questions sourced from your uploaded solved papers</footer>
+  </div>
+
+  <!-- ================= SCREEN 2: INSTRUCTIONS ================= -->
+  <div id="screen-instructions" class="hidden">
+    <div class="instructions-panel">
+      <h2 id="instTitle">Paper Title</h2>
+      <p style="color:var(--text-mut);margin-top:-8px;">100 Questions • 60 Minutes • 4 Sections</p>
+
+      <div class="marks-row">
+        <div class="mark-chip correct"><span>+2</span>Correct Answer</div>
+        <div class="mark-chip incorrect"><span>−0.5</span>Incorrect Answer</div>
+        <div class="mark-chip skip"><span>0</span>Skipped</div>
+      </div>
+
+      <ol>
+        <li>The test contains 100 questions across 4 sections, to be completed in <b>60 minutes</b>.</li>
+        <li>Each question has 4 options; select exactly one as your answer.</li>
+        <li>Use the question palette on the right (during the test) to jump to any question instantly.</li>
+        <li>You may change or clear your answer for any question before final submission.</li>
+        <li>Submitting early is allowed — you don't have to use the full hour.</li>
+        <li>Once you submit, you'll see your total score, a section-wise breakdown, and a full answer review with explanations of correct answers.</li>
+      </ol>
+
+      <div style="display:flex;gap:12px;margin-top:10px;">
+        <button class="btn btn-ghost" onclick="goHome()">← Back</button>
+        <button class="btn btn-primary btn-block" onclick="startExam()">Start Test — 60:00 begins now ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCREEN 3: EXAM ================= -->
+  <div id="screen-exam" class="hidden">
+    <div class="exam-wrap">
+      <div class="exam-main">
+        <div class="qcard">
+          <div class="qhead">
+            <span class="qnum" id="qNumLabel">Question 1</span>
+            <span class="section-tag" id="sectionTag">Section</span>
+          </div>
+          <div class="qtext" id="qText"></div>
+          <div class="options" id="optionsWrap"></div>
+
+          <div class="qfooter">
+            <div class="left-actions">
+              <button class="btn btn-ghost" id="clearBtn" onclick="clearAnswer()">Clear Answer</button>
+            </div>
+            <div class="nav-actions">
+              <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()">← Previous</button>
+              <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Save &amp; Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="exam-side">
+        <div class="side-card">
+          <h4>Question Palette</h4>
+          <div class="legend">
+            <span><i class="dot ans"></i>Answered</span>
+            <span><i class="dot skipped"></i>Skipped</span>
+            <span><i class="dot notvisited"></i>Not visited</span>
+          </div>
+          <div class="qgrid" id="qGrid"></div>
+        </div>
+
+        <div class="side-card submit-zone">
+          <div class="summary-mini" id="liveSummary"></div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-danger btn-block" onclick="confirmSubmit()">Submit Test</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCREEN 4: RESULTS ================= -->
+  <div id="screen-results" class="hidden">
+    <div class="results-hero">
+      <div style="font-size:13px;letter-spacing:1px;opacity:0.85;" id="resPaperTitle">PAPER NAME</div>
+      <h2>Your Score</h2>
+      <div class="score-big" id="finalScore">0 / 200</div>
+      <div class="score-sub" id="finalSub">Correct: 0 · Incorrect: 0 · Skipped: 0</div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box green"><div class="num" id="statCorrect">0</div><div class="lab">Correct (+2 each)</div></div>
+      <div class="stat-box red"><div class="num" id="statIncorrect">0</div><div class="lab">Incorrect (−0.5 each)</div></div>
+      <div class="stat-box gray"><div class="num" id="statSkipped">0</div><div class="lab">Skipped (0)</div></div>
+      <div class="stat-box"><div class="num" id="statAccuracy">0%</div><div class="lab">Accuracy (attempted)</div></div>
+      <div class="stat-box"><div class="num" id="statTime">00:00</div><div class="lab">Time Taken</div></div>
+    </div>
+
+    <div class="section-breakdown">
+      <h3>Section-wise Performance</h3>
+      <div class="sb-row head">
+        <div>Section</div><div>Correct</div><div>Incorrect</div><div>Skipped</div><div>Score</div>
+      </div>
+      <div id="sectionRows"></div>
+    </div>
+
+    <div class="review-toolbar">
+      <h3>Answer Review</h3>
+      <div class="filter-pills" id="filterPills">
+        <span class="fpill active" data-f="all">All</span>
+        <span class="fpill" data-f="correct">Correct</span>
+        <span class="fpill" data-f="incorrect">Incorrect</span>
+        <span class="fpill" data-f="skipped">Skipped</span>
+      </div>
+    </div>
+    <div id="reviewList"></div>
+
+    <div style="display:flex;gap:12px;margin:26px 0 10px;">
+      <button class="btn btn-outline" onclick="goHome()">← Back to Papers</button>
+      <button class="btn btn-gold" onclick="retakeSamePaper()">Retake This Paper</button>
+    </div>
+    <footer class="endnote">All the best for your SSC CGL exam! 🎯</footer>
+  </div>
+
+</div>
+
+<script src="data_paper1.js"></script>
+<script src="data_paper2.js"></script>
+<script src="data_paper3.js"></script>
+<script>
+/* ============================================================
+   SSC CGL MOCK TEST ENGINE
+   ============================================================ */
+const ALL_PAPERS = [PAPER1, PAPER2, PAPER3];
+const DURATION_SECONDS = 60 * 60; // fixed 1 hour
+const MARK_CORRECT = 2;
+const MARK_INCORRECT = -0.5;
+
+let state = {
+  paper: null,
+  answers: {},      // qIndex -> selected option index
+  visited: {},       // qIndex -> true
+  current: 0,
+  timeLeft: DURATION_SECONDS,
+  timerHandle: null,
+  startedAt: null,
+  submitted: false
+};
+
+/* ---------- Helpers ---------- */
+function pad(n){ return n.toString().padStart(2,'0'); }
+function fmtTime(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return pad(m)+":"+pad(sec);
+}
+function sectionForIndex(paper, qIndexZeroBased){
+  const qn = qIndexZeroBased + 1;
+  return paper.sections.find(s => qn >= s.range[0] && qn <= s.range[1]);
+}
+
+/* ---------- Screen switching ---------- */
+function showScreen(id){
+  ['screen-home','screen-instructions','screen-exam','screen-results'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
+  document.getElementById('timerWrap').classList.toggle('hidden', id!=='screen-exam');
+}
+
+function goHome(){
+  stopTimer();
+  state = {paper:null, answers:{}, visited:{}, current:0, timeLeft:DURATION_SECONDS, timerHandle:null, startedAt:null, submitted:false};
+  showScreen('screen-home');
+  document.getElementById('topTitle').textContent = 'SSC CGL Tier-I Mock Test';
+  document.getElementById('topSub').textContent = 'Practice • Analyse • Improve';
+}
+
+/* ---------- Render paper selection cards ---------- */
+function renderPaperGrid(){
+  const grid = document.getElementById('paperGrid');
+  grid.innerHTML = '';
+  ALL_PAPERS.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'paper-card';
+    card.innerHTML = `
+      <span class="ptag">MOCK ${idx+1}</span>
+      <h3>${p.title}</h3>
+      <div class="meta">${p.sections.map(s=>s.name).join(' · ')}</div>
+      <div class="stats"><span><b>100</b> Qs</span><span><b>60</b> min</span><span><b>200</b> marks</span></div>
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="selectPaper('${p.id}')">Start This Mock →</button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function selectPaper(id){
+  state.paper = ALL_PAPERS.find(p=>p.id===id);
+  document.getElementById('instTitle').textContent = state.paper.title;
+  showScreen('screen-instructions');
+}
+
+/* ---------- Start Exam ---------- */
+function startExam(){
+  state.answers = {};
+  state.visited = {0:true};
+  state.current = 0;
+  state.timeLeft = DURATION_SECONDS;
+  state.startedAt = Date.now();
+  state.submitted = false;
+
+  document.getElementById('topTitle').textContent = state.paper.title;
+  document.getElementById('topSub').textContent = '100 Questions • 60 Minutes';
+
+  showScreen('screen-exam');
+  renderQuestionGrid();
+  renderQuestion();
+  startTimer();
+}
+
+/* ---------- Timer ---------- */
+function startTimer(){
+  stopTimer();
+  updateTimerDisplay();
+  state.timerHandle = setInterval(()=>{
+    state.timeLeft--;
+    if(state.timeLeft <= 0){
+      state.timeLeft = 0;
+      updateTimerDisplay();
+      stopTimer();
+      submitTest(true);
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+function stopTimer(){
+  if(state.timerHandle){ clearInterval(state.timerHandle); state.timerHandle = null; }
+}
+function updateTimerDisplay(){
+  const pill = document.getElementById('timerPill');
+  pill.textContent = '⏱ ' + fmtTime(state.timeLeft);
+  pill.classList.remove('warn','danger');
+  if(state.timeLeft <= 60) pill.classList.add('danger');
+  else if(state.timeLeft <= 300) pill.classList.add('warn');
+}
+
+/* ---------- Render current question ---------- */
+function renderQuestion(){
+  const p = state.paper;
+  const i = state.current;
+  const q = p.questions[i];
+  const sec = sectionForIndex(p, i);
+
+  document.getElementById('qNumLabel').textContent = `Question ${i+1} of 100`;
+  document.getElementById('sectionTag').textContent = sec ? sec.name : '';
+  document.getElementById('qText').textContent = q.q;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt, oi) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (state.answers[i]===oi ? ' selected' : '');
+    div.innerHTML = `<span class="optlabel">${letters[oi]}</span><span>${opt}</span>`;
+    div.onclick = () => selectOption(oi);
+    wrap.appendChild(div);
+  });
+
+  state.visited[i] = true;
+  document.getElementById('prevBtn').disabled = (i===0);
+  document.getElementById('prevBtn').style.opacity = (i===0) ? 0.5 : 1;
+  document.getElementById('nextBtn').textContent = (i===99) ? 'Save & Finish ✓' : 'Save & Next →';
+
+  refreshGridHighlight();
+  refreshLiveSummary();
+}
+
+function selectOption(oi){
+  state.answers[state.current] = oi;
+  renderQuestion();
+}
+function clearAnswer(){
+  delete state.answers[state.current];
+  renderQuestion();
+}
+function nextQuestion(){
+  if(state.current < 99){ state.current++; renderQuestion(); }
+  else { confirmSubmit(); }
+}
+function prevQuestion(){
+  if(state.current > 0){ state.current--; renderQuestion(); }
+}
+function jumpTo(i){
+  state.current = i;
+  renderQuestion();
+}
+
+/* ---------- Sidebar grid ---------- */
+function renderQuestionGrid(){
+  const grid = document.getElementById('qGrid');
+  grid.innerHTML = '';
+  for(let i=0;i<100;i++){
+    const cell = document.createElement('div');
+    cell.className = 'gcell notvisited';
+    cell.textContent = i+1;
+    cell.id = 'gcell-'+i;
+    cell.onclick = () => jumpTo(i);
+    grid.appendChild(cell);
+  }
+}
+function refreshGridHighlight(){
+  for(let i=0;i<100;i++){
+    const cell = document.getElementById('gcell-'+i);
+    if(!cell) continue;
+    cell.className = 'gcell';
+    if(state.answers[i] !== undefined) cell.classList.add('answered');
+    else if(state.visited[i]) cell.classList.add('skipped');
+    else cell.classList.add('notvisited');
+    if(i === state.current) cell.classList.add('current');
+  }
+}
+function refreshLiveSummary(){
+  const answered = Object.keys(state.answers).length;
+  const visitedNotAnswered = Object.keys(state.visited).filter(k => state.visited[k] && state.answers[k]===undefined).length;
+  const notVisited = 100 - Object.keys(state.visited).length;
+  document.getElementById('liveSummary').innerHTML =
+    `<b>${answered}</b> Answered &nbsp;·&nbsp; <b>${visitedNotAnswered}</b> Skipped &nbsp;·&nbsp; <b>${notVisited}</b> Not Visited`;
+}
+
+/* ---------- Submit ---------- */
+function confirmSubmit(){
+  const answered = Object.keys(state.answers).length;
+  const remaining = 100 - answered;
+  const msg = remaining > 0
+    ? `You have ${remaining} unanswered question(s). Submit anyway?`
+    : `Submit your test now?`;
+  if(confirm(msg)){
+    submitTest(false);
+  }
+}
+
+function submitTest(autoSubmitted){
+  if(state.submitted) return;
+  state.submitted = true;
+  stopTimer();
+
+  const p = state.paper;
+  let correct=0, incorrect=0, skipped=0;
+  const perSection = {};
+  p.sections.forEach(s => perSection[s.name] = {correct:0, incorrect:0, skipped:0, score:0});
+
+  const results = p.questions.map((q, i) => {
+    const sec = sectionForIndex(p, i);
+    const userAns = state.answers[i];
+    let status;
+    if(userAns === undefined){
+      status = 'skipped'; skipped++;
+      perSection[sec.name].skipped++;
+    } else if(userAns === q.a){
+      status = 'correct'; correct++;
+      perSection[sec.name].correct++;
+      perSection[sec.name].score += MARK_CORRECT;
+    } else {
+      status = 'incorrect'; incorrect++;
+      perSection[sec.name].incorrect++;
+      perSection[sec.name].score += MARK_INCORRECT;
+    }
+    return {n:q.n, q:q.q, o:q.o, a:q.a, userAns, status, section: sec ? sec.name : ''};
+  });
+
+  const totalScore = (correct*MARK_CORRECT + incorrect*MARK_INCORRECT);
+  const timeTakenSec = DURATION_SECONDS - state.timeLeft;
+
+  renderResults(p, results, perSection, correct, incorrect, skipped, totalScore, timeTakenSec, autoSubmitted);
+  showScreen('screen-results');
+}
+
+/* ---------- Results rendering ---------- */
+let lastResultsData = null;
+
+function renderResults(p, results, perSection, correct, incorrect, skipped, totalScore, timeTakenSec, autoSubmitted){
+  lastResultsData = {p, results, perSection, correct, incorrect, skipped, totalScore, timeTakenSec};
+
+  document.getElementById('resPaperTitle').textContent = p.title.toUpperCase() + (autoSubmitted ? ' — TIME UP, AUTO-SUBMITTED' : '');
+  document.getElementById('finalScore').textContent = `${totalScore.toFixed(1)} / 200`;
+  document.getElementById('finalSub').textContent = `Correct: ${correct} · Incorrect: ${incorrect} · Skipped: ${skipped}`;
+
+  document.getElementById('statCorrect').textContent = correct;
+  document.getElementById('statIncorrect').textContent = incorrect;
+  document.getElementById('statSkipped').textContent = skipped;
+  const attempted = correct + incorrect;
+  const accuracy = attempted > 0 ? Math.round((correct/attempted)*100) : 0;
+  document.getElementById('statAccuracy').textContent = accuracy + '%';
+  document.getElementById('statTime').textContent = fmtTime(timeTakenSec);
+
+  const rows = document.getElementById('sectionRows');
+  rows.innerHTML = '';
+  p.sections.forEach(s => {
+    const d = perSection[s.name];
+    const row = document.createElement('div');
+    row.className = 'sb-row';
+    row.innerHTML = `
+      <div>${s.name}</div>
+      <div class="c">${d.correct}</div>
+      <div class="w">${d.incorrect}</div>
+      <div>${d.skipped}</div>
+      <div><b>${d.score.toFixed(1)}</b></div>
+    `;
+    rows.appendChild(row);
+  });
+
+  renderReviewList('all');
+
+  document.querySelectorAll('.fpill').forEach(pill => {
+    pill.onclick = () => {
+      document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('active'));
+      pill.classList.add('active');
+      renderReviewList(pill.dataset.f);
+    };
+  });
+
+  window.scrollTo(0,0);
+}
+
+function renderReviewList(filter){
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  lastResultsData.results
+    .filter(r => filter==='all' ? true : r.status===filter)
+    .forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'review-card';
+      let answerHtml = '';
+      if(r.status === 'skipped'){
+        answerHtml = `<div class="ra notmarked">You did not attempt this question.</div>
+                      <div class="ra right">Correct answer: ${letters[r.a]}. ${r.o[r.a]}</div>`;
+      } else if(r.status === 'correct'){
+        answerHtml = `<div class="ra your-correct">Your answer (Correct): ${letters[r.userAns]}. ${r.o[r.userAns]}</div>`;
+      } else {
+        answerHtml = `<div class="ra your-wrong">Your answer: ${letters[r.userAns]}. ${r.o[r.userAns]}</div>
+                      <div class="ra right">Correct answer: ${letters[r.a]}. ${r.o[r.a]}</div>`;
+      }
+      card.innerHTML = `
+        <div class="rh">
+          <div><b>Q${r.n}</b> &nbsp;<span style="color:var(--text-mut);font-size:12px;">${r.section}</span></div>
+          <span class="rtag ${r.status}">${r.status.toUpperCase()}</span>
+        </div>
+        <div class="rq">${r.q}</div>
+        <div class="ranswers">${answerHtml}</div>
+      `;
+      list.appendChild(card);
+    });
+  if(list.innerHTML === ''){
+    list.innerHTML = `<div style="text-align:center;color:var(--text-mut);padding:30px;">No questions in this category.</div>`;
+  }
+}
+
+function retakeSamePaper(){
+  const p = state.paper;
+  showScreen('screen-instructions');
+  document.getElementById('instTitle').textContent = p.title;
+}
+
+/* ---------- Keyboard shortcuts (1-4 to select options, arrows to navigate) ---------- */
+document.addEventListener('keydown', (e) => {
+  if(document.getElementById('screen-exam').classList.contains('hidden')) return;
+  if(['1','2','3','4'].includes(e.key)){
+    selectOption(parseInt(e.key)-1);
+  } else if(e.key === 'ArrowRight'){
+    nextQuestion();
+  } else if(e.key === 'ArrowLeft'){
+    prevQuestion();
+  }
+});
+
+/* ---------- Warn before leaving mid-exam ---------- */
+window.addEventListener('beforeunload', (e) => {
+  if(!document.getElementById('screen-exam').classList.contains('hidden') && !state.submitted){
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+/* ---------- Init ---------- */
+renderPaperGrid();
+showScreen('screen-home');
+</script>
+
+</body>
+</html>
