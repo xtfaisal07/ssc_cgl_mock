@@ -326,6 +326,7 @@
     <div id="timerWrap" class="hidden">
       <div class="timer-pill" id="timerPill">⏱ 60:00</div>
     </div>
+    <button class="navlink hidden" id="homeNavBtn" onclick="goHome()">🏠 Home</button>
     <button class="navlink hidden" id="historyNavBtn" onclick="openHistory()">📊 My History</button>
     <div id="userBarWrap"></div>
   </div>
@@ -345,6 +346,7 @@
     <div class="rules-box">
       <h4>📋 Exam Pattern &amp; Marking Scheme</h4>
       <ul>
+        <li><b>Login required:</b> create a free account (or log in) to start any mock — this is how your scores get saved and shown in "My History."</li>
         <li><b>Duration:</b> 60 minutes (1 hour) — fixed for every mock, regardless of paper.</li>
         <li><b>Questions:</b> 100 (4 sections × 25 questions each).</li>
         <li><b>Marking:</b> <b>+2</b> for every correct answer, <b>−0.5</b> for every incorrect answer, <b>0</b> for unattempted/skipped questions.</li>
@@ -483,6 +485,10 @@
       <div class="auth-error" id="authError"></div>
       <div class="auth-note" id="authNote"></div>
 
+      <div class="field hidden" id="authNameField">
+        <label>Full Name</label>
+        <input type="text" id="authName" placeholder="e.g. Faisal Naseer" autocomplete="name">
+      </div>
       <div class="field">
         <label>Email</label>
         <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
@@ -499,7 +505,7 @@
       </div>
 
       <div style="text-align:center;margin-top:18px;">
-        <a style="font-size:12.5px;color:var(--text-mut);cursor:pointer;" onclick="continueAsGuest()">Continue without an account →</a>
+        <a style="font-size:12.5px;color:var(--text-mut);cursor:pointer;" onclick="goHome()">← Back to home</a>
       </div>
     </div>
   </div>
@@ -527,8 +533,8 @@
 // ============================================================
 // SUPABASE CONFIG — fill these in (see README for instructions)
 // ============================================================
-const SUPABASE_URL = "https://rspxtkfkffpgbuqgdcvx.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_z1y4exlPTehbckjoMqxESw_CGumeCc_";
+const SUPABASE_URL = "YOUR_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
 
 let supabaseClient = null;
 let currentUser = null; // { id, email } or null = guest mode
@@ -576,6 +582,9 @@ function showScreen(id){
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
   document.getElementById('timerWrap').classList.toggle('hidden', id!=='screen-exam');
+  if(typeof refreshNavVisibilityForScreen === 'function'){
+    refreshNavVisibilityForScreen();
+  }
 }
 
 function goHome(){
@@ -604,7 +613,14 @@ function renderPaperGrid(){
   });
 }
 
+let pendingPaperId = null; // remembers which paper the user wanted, if login is required first
+
 function selectPaper(id){
+  if(!currentUser){
+    pendingPaperId = id;
+    openAuthScreen('login', 'Please log in or sign up to start a mock test.');
+    return;
+  }
   state.paper = ALL_PAPERS.find(p=>p.id===id);
   document.getElementById('instTitle').textContent = state.paper.title;
   showScreen('screen-instructions');
@@ -877,7 +893,7 @@ function retakeSamePaper(){
 }
 
 /* ============================================================
-   AUTH (Supabase email/password)
+   AUTH (Supabase email/password + display name)
    ============================================================ */
 let authMode = 'login'; // 'login' | 'signup'
 
@@ -885,12 +901,15 @@ function switchAuthMode(mode){
   authMode = mode;
   document.getElementById('authError').style.display = 'none';
   document.getElementById('authNote').style.display = 'none';
+  const nameField = document.getElementById('authNameField');
   if(mode === 'signup'){
+    nameField.classList.remove('hidden');
     document.getElementById('authHeading').textContent = 'Create Your Account';
     document.getElementById('authSub').textContent = 'Sign up to start saving your scores and tracking progress.';
     document.getElementById('authSubmitBtn').textContent = 'Sign Up';
     document.getElementById('authToggleWrap').innerHTML = `Already have an account? <a onclick="switchAuthMode('login')">Log in</a>`;
   } else {
+    nameField.classList.add('hidden');
     document.getElementById('authHeading').textContent = 'Welcome Back';
     document.getElementById('authSub').textContent = 'Log in to save your scores and track progress over time.';
     document.getElementById('authSubmitBtn').textContent = 'Log In';
@@ -898,15 +917,15 @@ function switchAuthMode(mode){
   }
 }
 
-function openAuthScreen(mode){
+function openAuthScreen(mode, customSub){
   switchAuthMode(mode || 'login');
+  document.getElementById('authName').value = '';
   document.getElementById('authEmail').value = '';
   document.getElementById('authPassword').value = '';
+  if(customSub){
+    document.getElementById('authSub').textContent = customSub;
+  }
   showScreen('screen-auth');
-}
-
-function continueAsGuest(){
-  goHome();
 }
 
 async function handleAuthSubmit(){
@@ -921,9 +940,15 @@ async function handleAuthSubmit(){
     return;
   }
 
+  const name = document.getElementById('authName').value.trim();
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
 
+  if(authMode === 'signup' && !name){
+    errBox.textContent = 'Please enter your name.';
+    errBox.style.display = 'block';
+    return;
+  }
   if(!email || !password){
     errBox.textContent = 'Please enter both email and password.';
     errBox.style.display = 'block';
@@ -937,7 +962,10 @@ async function handleAuthSubmit(){
 
   try {
     if(authMode === 'signup'){
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      const { data, error } = await supabaseClient.auth.signUp({
+        email, password,
+        options: { data: { full_name: name } }
+      });
       if(error) throw error;
       if(data.session){
         await onAuthSuccess(data.session);
@@ -960,10 +988,28 @@ async function handleAuthSubmit(){
   }
 }
 
+function nameFromSession(session){
+  const meta = session.user.user_metadata || {};
+  return meta.full_name || meta.name || null;
+}
+
 async function onAuthSuccess(session){
-  currentUser = { id: session.user.id, email: session.user.email, access_token: session.access_token };
+  currentUser = {
+    id: session.user.id,
+    email: session.user.email,
+    name: nameFromSession(session),
+    access_token: session.access_token
+  };
   renderUserBar();
-  goHome();
+
+  // If the person was trying to start a specific paper before being asked to log in, continue that flow now.
+  if(pendingPaperId){
+    const id = pendingPaperId;
+    pendingPaperId = null;
+    selectPaper(id);
+  } else {
+    goHome();
+  }
 }
 
 async function handleLogout(){
@@ -978,15 +1024,18 @@ async function handleLogout(){
 function renderUserBar(){
   const wrap = document.getElementById('userBarWrap');
   const historyBtn = document.getElementById('historyNavBtn');
+  const homeBtn = document.getElementById('homeNavBtn');
   if(currentUser){
-    const initial = (currentUser.email || '?').charAt(0).toUpperCase();
+    const displayName = currentUser.name || currentUser.email;
+    const initial = displayName.charAt(0).toUpperCase();
     wrap.innerHTML = `
       <div class="userbar">
         <span class="avatar">${initial}</span>
-        <span class="uemail">${currentUser.email}</span>
+        <span class="uemail" title="${currentUser.email}">${displayName}</span>
         <button onclick="handleLogout()">Log out</button>
       </div>`;
     historyBtn.classList.remove('hidden');
+    homeBtn.classList.remove('hidden');
   } else {
     wrap.innerHTML = `
       <div class="userbar">
@@ -994,6 +1043,24 @@ function renderUserBar(){
         <button onclick="openAuthScreen('signup')" style="background:var(--gold);color:var(--navy-dark);border-color:var(--gold);">Sign up</button>
       </div>`;
     historyBtn.classList.add('hidden');
+    homeBtn.classList.add('hidden');
+  }
+  refreshNavVisibilityForScreen();
+}
+
+/* Hide Home/History nav buttons while an exam is actually in progress,
+   so people don't accidentally lose their attempt mid-test. They reappear
+   automatically on the results screen and everywhere else. */
+function refreshNavVisibilityForScreen(){
+  const inExam = !document.getElementById('screen-exam').classList.contains('hidden');
+  const historyBtn = document.getElementById('historyNavBtn');
+  const homeBtn = document.getElementById('homeNavBtn');
+  if(inExam){
+    historyBtn.classList.add('hidden');
+    homeBtn.classList.add('hidden');
+  } else if(currentUser){
+    historyBtn.classList.remove('hidden');
+    homeBtn.classList.remove('hidden');
   }
 }
 
@@ -1001,19 +1068,60 @@ async function restoreSession(){
   if(!supabaseClient) return;
   const { data } = await supabaseClient.auth.getSession();
   if(data && data.session){
-    currentUser = { id: data.session.user.id, email: data.session.user.email, access_token: data.session.access_token };
+    currentUser = {
+      id: data.session.user.id,
+      email: data.session.user.email,
+      name: nameFromSession(data.session),
+      access_token: data.session.access_token
+    };
   }
   renderUserBar();
 
   // Keep the access token fresh in memory if Supabase auto-refreshes it
   supabaseClient.auth.onAuthStateChange((_event, session) => {
     if(session){
-      currentUser = { id: session.user.id, email: session.user.email, access_token: session.access_token };
+      currentUser = {
+        id: session.user.id,
+        email: session.user.email,
+        name: nameFromSession(session),
+        access_token: session.access_token
+      };
     } else {
       currentUser = null;
     }
     renderUserBar();
   });
+}
+
+/* ============================================================
+   SAFE FETCH HELPER — avoids cryptic "Unexpected token" errors
+   when an API route returns an HTML error page instead of JSON
+   (e.g. misconfigured deployment, wrong path, server crash).
+   ============================================================ */
+async function safeFetchJson(url, options){
+  let res;
+  try {
+    res = await fetch(url, options);
+  } catch (networkErr) {
+    throw new Error('Network error — could not reach the server. Check your connection and try again.');
+  }
+
+  const raw = await res.text();
+  let json;
+  try {
+    json = raw ? JSON.parse(raw) : {};
+  } catch (parseErr) {
+    console.error('Non-JSON response from', url, '— raw response:', raw.slice(0, 300));
+    throw new Error(
+      `Server returned an unexpected response (status ${res.status}). ` +
+      `This usually means the API route isn't deployed correctly — check your Vercel deployment.`
+    );
+  }
+
+  if(!res.ok){
+    throw new Error(json.error || `Request failed (status ${res.status}).`);
+  }
+  return json;
 }
 
 /* ============================================================
@@ -1033,7 +1141,7 @@ async function saveResultToHistory(p, perSection, correct, incorrect, skipped, t
 
   noteEl.textContent = 'Saving your result…';
   try {
-    const res = await fetch('/api/submit-result', {
+    const json = await safeFetchJson('/api/submit-result', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1050,10 +1158,7 @@ async function saveResultToHistory(p, perSection, correct, incorrect, skipped, t
         sectionBreakdown: perSection
       })
     });
-    const json = await res.json();
-    if(!res.ok || !json.success){
-      throw new Error(json.error || 'Failed to save.');
-    }
+    if(!json.success) throw new Error(json.error || 'Failed to save.');
     noteEl.textContent = '✓ Saved to your history.';
   } catch (err) {
     console.error('Save result failed:', err);
@@ -1086,13 +1191,10 @@ async function openHistory(){
   }
 
   try {
-    const res = await fetch('/api/history', {
+    const json = await safeFetchJson('/api/history', {
       headers: { 'Authorization': 'Bearer ' + currentUser.access_token }
     });
-    const json = await res.json();
-    if(!res.ok || !json.success){
-      throw new Error(json.error || 'Failed to load history.');
-    }
+    if(!json.success) throw new Error(json.error || 'Failed to load history.');
     renderHistoryList(json.results);
   } catch (err) {
     console.error('History load failed:', err);

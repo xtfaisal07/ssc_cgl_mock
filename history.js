@@ -1,8 +1,8 @@
 // api/history.js
 // GET — returns all past results for the authenticated user, newest first.
 // Header: Authorization: Bearer <supabase access token>
-const { getSupabaseAdmin } = require('./_supabaseAdmin');
-const { getUserFromRequest } = require('./_auth');
+const { getSupabaseAdmin } = require('./_lib/supabaseAdmin');
+const { getUserFromRequest } = require('./_lib/auth');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {

@@ -2,8 +2,8 @@
 // POST { paperId, paperTitle, totalScore, correctCount, incorrectCount,
 //        skippedCount, timeTakenSeconds, sectionBreakdown, answers }
 // Header: Authorization: Bearer <supabase access token>
-const { getSupabaseAdmin } = require('./_supabaseAdmin');
-const { getUserFromRequest } = require('./_auth');
+const { getSupabaseAdmin } = require('./_lib/supabaseAdmin');
+const { getUserFromRequest } = require('./_lib/auth');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
