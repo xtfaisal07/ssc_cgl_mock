@@ -243,6 +243,73 @@
     .topbar h1{font-size:14px;}
     .sb-row{grid-template-columns:1.4fr repeat(4,1fr);font-size:12px;}
   }
+
+  /* ---------- AUTH SCREEN ---------- */
+  .auth-wrap{
+    max-width:420px;margin:60px auto;background:var(--card-bg);border:1px solid var(--border);
+    border-radius:16px;padding:32px;box-shadow:0 4px 18px rgba(20,40,70,0.1);
+  }
+  .auth-wrap h2{margin:0 0 4px;color:var(--navy);text-align:center;}
+  .auth-wrap p.sub{text-align:center;color:var(--text-mut);font-size:13.5px;margin:0 0 22px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--navy-dark);margin-bottom:6px;}
+  .field input{
+    width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14.5px;
+    outline:none;transition:border-color .12s;
+  }
+  .field input:focus{border-color:var(--blue);}
+  .auth-error{
+    background:#fdeceb;color:var(--red);border:1px solid #f6c9c5;border-radius:8px;
+    padding:10px 12px;font-size:13px;margin-bottom:14px;display:none;
+  }
+  .auth-note{
+    background:#eaf8ef;color:#175c33;border:1px solid #bfe6cc;border-radius:8px;
+    padding:10px 12px;font-size:13px;margin-bottom:14px;display:none;
+  }
+  .auth-toggle{text-align:center;font-size:13.5px;color:var(--text-mut);margin-top:16px;}
+  .auth-toggle a{color:var(--blue);font-weight:600;cursor:pointer;text-decoration:none;}
+  .auth-toggle a:hover{text-decoration:underline;}
+
+  /* ---------- USER BAR (top, when logged in) ---------- */
+  .userbar{
+    display:flex;align-items:center;gap:10px;
+  }
+  .userbar .avatar{
+    width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--navy-dark);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;
+  }
+  .userbar .uemail{font-size:12px;color:#cfe0f5;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .userbar button{
+    background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;
+    border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;font-weight:600;
+  }
+  .userbar button:hover{background:rgba(255,255,255,0.22);}
+  .navlink{
+    background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:6px;
+    padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600;
+  }
+  .navlink:hover{background:rgba(255,255,255,0.15);}
+
+  /* ---------- HISTORY SCREEN ---------- */
+  .history-hero{display:flex;justify-content:space-between;align-items:center;margin-top:24px;flex-wrap:wrap;gap:10px;}
+  .history-hero h2{color:var(--navy);margin:0;}
+  .history-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:20px 0 8px;}
+  .hist-card{
+    background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;
+    display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .hist-card .hc-left{flex:1;min-width:180px;}
+  .hist-card .hc-title{font-weight:700;color:var(--navy);font-size:14.5px;}
+  .hist-card .hc-date{font-size:12px;color:var(--text-mut);margin-top:3px;}
+  .hist-card .hc-mid{display:flex;gap:18px;font-size:12.5px;color:var(--text-mut);flex-wrap:wrap;}
+  .hist-card .hc-mid b{color:var(--navy-dark);}
+  .hist-card .hc-score{font-size:20px;font-weight:800;color:var(--blue);min-width:90px;text-align:right;}
+  .hist-card .hc-score small{display:block;font-size:11px;font-weight:600;color:var(--text-mut);}
+  .empty-history{text-align:center;color:var(--text-mut);padding:50px 20px;}
+  .empty-history .big-emoji{font-size:42px;margin-bottom:10px;}
+  .loading-spin{
+    text-align:center;color:var(--text-mut);padding:40px;font-size:14px;
+  }
 </style>
 </head>
 <body>
@@ -255,8 +322,12 @@
       <small id="topSub">Practice • Analyse • Improve</small>
     </div>
   </div>
-  <div id="timerWrap" class="hidden">
-    <div class="timer-pill" id="timerPill">⏱ 60:00</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div id="timerWrap" class="hidden">
+      <div class="timer-pill" id="timerPill">⏱ 60:00</div>
+    </div>
+    <button class="navlink hidden" id="historyNavBtn" onclick="openHistory()">📊 My History</button>
+    <div id="userBarWrap"></div>
   </div>
 </div>
 
@@ -397,16 +468,77 @@
     <div style="display:flex;gap:12px;margin:26px 0 10px;">
       <button class="btn btn-outline" onclick="goHome()">← Back to Papers</button>
       <button class="btn btn-gold" onclick="retakeSamePaper()">Retake This Paper</button>
+      <button class="btn btn-ghost" onclick="openHistory()">View My History →</button>
     </div>
+    <div id="saveStatusNote" style="text-align:center;font-size:12.5px;color:var(--text-mut);margin-bottom:10px;"></div>
     <footer class="endnote">All the best for your SSC CGL exam! 🎯</footer>
+  </div>
+
+  <!-- ================= SCREEN 5: AUTH (LOGIN / SIGNUP) ================= -->
+  <div id="screen-auth" class="hidden">
+    <div class="auth-wrap">
+      <h2 id="authHeading">Welcome Back</h2>
+      <p class="sub" id="authSub">Log in to save your scores and track progress over time.</p>
+
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-note" id="authNote"></div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-primary btn-block" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
+
+      <div class="auth-toggle" id="authToggleWrap">
+        Don't have an account? <a onclick="switchAuthMode('signup')">Sign up</a>
+      </div>
+
+      <div style="text-align:center;margin-top:18px;">
+        <a style="font-size:12.5px;color:var(--text-mut);cursor:pointer;" onclick="continueAsGuest()">Continue without an account →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SCREEN 6: HISTORY ================= -->
+  <div id="screen-history" class="hidden">
+    <div class="history-hero">
+      <h2>📊 My Test History</h2>
+      <button class="btn btn-outline" onclick="goHome()">← Back to Papers</button>
+    </div>
+
+    <div id="historyStatsWrap"></div>
+    <div id="historyListWrap">
+      <div class="loading-spin">Loading your history…</div>
+    </div>
   </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="data_paper1.js"></script>
 <script src="data_paper2.js"></script>
 <script src="data_paper3.js"></script>
 <script>
+// ============================================================
+// SUPABASE CONFIG — fill these in (see README for instructions)
+// ============================================================
+const SUPABASE_URL = "https://rspxtkfkffpgbuqgdcvx.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_z1y4exlPTehbckjoMqxESw_CGumeCc_";
+
+let supabaseClient = null;
+let currentUser = null; // { id, email } or null = guest mode
+
+if (SUPABASE_URL && SUPABASE_URL.indexOf('YOUR_SUPABASE') === -1) {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  console.warn('Supabase not configured yet — running in guest mode (no history saving).');
+}
+
 /* ============================================================
    SSC CGL MOCK TEST ENGINE
    ============================================================ */
@@ -438,8 +570,9 @@ function sectionForIndex(paper, qIndexZeroBased){
 }
 
 /* ---------- Screen switching ---------- */
+const ALL_SCREENS = ['screen-home','screen-instructions','screen-exam','screen-results','screen-auth','screen-history'];
 function showScreen(id){
-  ['screen-home','screen-instructions','screen-exam','screen-results'].forEach(s=>{
+  ALL_SCREENS.forEach(s=>{
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
   document.getElementById('timerWrap').classList.toggle('hidden', id!=='screen-exam');
@@ -659,6 +792,9 @@ let lastResultsData = null;
 function renderResults(p, results, perSection, correct, incorrect, skipped, totalScore, timeTakenSec, autoSubmitted){
   lastResultsData = {p, results, perSection, correct, incorrect, skipped, totalScore, timeTakenSec};
 
+  document.getElementById('saveStatusNote').textContent = '';
+  saveResultToHistory(p, perSection, correct, incorrect, skipped, totalScore, timeTakenSec);
+
   document.getElementById('resPaperTitle').textContent = p.title.toUpperCase() + (autoSubmitted ? ' — TIME UP, AUTO-SUBMITTED' : '');
   document.getElementById('finalScore').textContent = `${totalScore.toFixed(1)} / 200`;
   document.getElementById('finalSub').textContent = `Correct: ${correct} · Incorrect: ${incorrect} · Skipped: ${skipped}`;
@@ -740,6 +876,284 @@ function retakeSamePaper(){
   document.getElementById('instTitle').textContent = p.title;
 }
 
+/* ============================================================
+   AUTH (Supabase email/password)
+   ============================================================ */
+let authMode = 'login'; // 'login' | 'signup'
+
+function switchAuthMode(mode){
+  authMode = mode;
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authNote').style.display = 'none';
+  if(mode === 'signup'){
+    document.getElementById('authHeading').textContent = 'Create Your Account';
+    document.getElementById('authSub').textContent = 'Sign up to start saving your scores and tracking progress.';
+    document.getElementById('authSubmitBtn').textContent = 'Sign Up';
+    document.getElementById('authToggleWrap').innerHTML = `Already have an account? <a onclick="switchAuthMode('login')">Log in</a>`;
+  } else {
+    document.getElementById('authHeading').textContent = 'Welcome Back';
+    document.getElementById('authSub').textContent = 'Log in to save your scores and track progress over time.';
+    document.getElementById('authSubmitBtn').textContent = 'Log In';
+    document.getElementById('authToggleWrap').innerHTML = `Don't have an account? <a onclick="switchAuthMode('signup')">Sign up</a>`;
+  }
+}
+
+function openAuthScreen(mode){
+  switchAuthMode(mode || 'login');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  showScreen('screen-auth');
+}
+
+function continueAsGuest(){
+  goHome();
+}
+
+async function handleAuthSubmit(){
+  const errBox = document.getElementById('authError');
+  const noteBox = document.getElementById('authNote');
+  errBox.style.display = 'none';
+  noteBox.style.display = 'none';
+
+  if(!supabaseClient){
+    errBox.textContent = 'Login is not configured yet. See README to connect Supabase.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  if(!email || !password){
+    errBox.textContent = 'Please enter both email and password.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('authSubmitBtn');
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = 'Please wait…';
+
+  try {
+    if(authMode === 'signup'){
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if(error) throw error;
+      if(data.session){
+        await onAuthSuccess(data.session);
+      } else {
+        noteBox.textContent = 'Account created! Check your email to confirm, then log in.';
+        noteBox.style.display = 'block';
+        switchAuthMode('login');
+      }
+    } else {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      await onAuthSuccess(data.session);
+    }
+  } catch (err) {
+    errBox.textContent = err.message || 'Something went wrong. Please try again.';
+    errBox.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function onAuthSuccess(session){
+  currentUser = { id: session.user.id, email: session.user.email, access_token: session.access_token };
+  renderUserBar();
+  goHome();
+}
+
+async function handleLogout(){
+  if(supabaseClient){
+    await supabaseClient.auth.signOut();
+  }
+  currentUser = null;
+  renderUserBar();
+  goHome();
+}
+
+function renderUserBar(){
+  const wrap = document.getElementById('userBarWrap');
+  const historyBtn = document.getElementById('historyNavBtn');
+  if(currentUser){
+    const initial = (currentUser.email || '?').charAt(0).toUpperCase();
+    wrap.innerHTML = `
+      <div class="userbar">
+        <span class="avatar">${initial}</span>
+        <span class="uemail">${currentUser.email}</span>
+        <button onclick="handleLogout()">Log out</button>
+      </div>`;
+    historyBtn.classList.remove('hidden');
+  } else {
+    wrap.innerHTML = `
+      <div class="userbar">
+        <button onclick="openAuthScreen('login')">Log in</button>
+        <button onclick="openAuthScreen('signup')" style="background:var(--gold);color:var(--navy-dark);border-color:var(--gold);">Sign up</button>
+      </div>`;
+    historyBtn.classList.add('hidden');
+  }
+}
+
+async function restoreSession(){
+  if(!supabaseClient) return;
+  const { data } = await supabaseClient.auth.getSession();
+  if(data && data.session){
+    currentUser = { id: data.session.user.id, email: data.session.user.email, access_token: data.session.access_token };
+  }
+  renderUserBar();
+
+  // Keep the access token fresh in memory if Supabase auto-refreshes it
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    if(session){
+      currentUser = { id: session.user.id, email: session.user.email, access_token: session.access_token };
+    } else {
+      currentUser = null;
+    }
+    renderUserBar();
+  });
+}
+
+/* ============================================================
+   SAVE RESULT TO DATABASE (called right after a test is submitted)
+   ============================================================ */
+async function saveResultToHistory(p, perSection, correct, incorrect, skipped, totalScore, timeTakenSec){
+  const noteEl = document.getElementById('saveStatusNote');
+
+  if(!currentUser){
+    noteEl.innerHTML = `Not saved — <a style="color:var(--blue);cursor:pointer;font-weight:600;" onclick="openAuthScreen('signup')">create a free account</a> to keep a history of all your scores.`;
+    return;
+  }
+  if(!supabaseClient){
+    noteEl.textContent = 'History saving is not configured on this deployment yet.';
+    return;
+  }
+
+  noteEl.textContent = 'Saving your result…';
+  try {
+    const res = await fetch('/api/submit-result', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + currentUser.access_token
+      },
+      body: JSON.stringify({
+        paperId: p.id,
+        paperTitle: p.title,
+        totalScore: totalScore,
+        correctCount: correct,
+        incorrectCount: incorrect,
+        skippedCount: skipped,
+        timeTakenSeconds: timeTakenSec,
+        sectionBreakdown: perSection
+      })
+    });
+    const json = await res.json();
+    if(!res.ok || !json.success){
+      throw new Error(json.error || 'Failed to save.');
+    }
+    noteEl.textContent = '✓ Saved to your history.';
+  } catch (err) {
+    console.error('Save result failed:', err);
+    noteEl.textContent = 'Could not save result (you can still view it now). ' + (err.message || '');
+  }
+}
+
+/* ============================================================
+   HISTORY SCREEN
+   ============================================================ */
+async function openHistory(){
+  showScreen('screen-history');
+  const listWrap = document.getElementById('historyListWrap');
+  const statsWrap = document.getElementById('historyStatsWrap');
+  statsWrap.innerHTML = '';
+  listWrap.innerHTML = `<div class="loading-spin">Loading your history…</div>`;
+
+  if(!currentUser){
+    listWrap.innerHTML = `
+      <div class="empty-history">
+        <div class="big-emoji">🔒</div>
+        <p>Log in or create a free account to see your saved test history.</p>
+        <button class="btn btn-primary" onclick="openAuthScreen('login')" style="margin-top:10px;">Log In / Sign Up</button>
+      </div>`;
+    return;
+  }
+  if(!supabaseClient){
+    listWrap.innerHTML = `<div class="empty-history"><p>History is not configured on this deployment yet.</p></div>`;
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/history', {
+      headers: { 'Authorization': 'Bearer ' + currentUser.access_token }
+    });
+    const json = await res.json();
+    if(!res.ok || !json.success){
+      throw new Error(json.error || 'Failed to load history.');
+    }
+    renderHistoryList(json.results);
+  } catch (err) {
+    console.error('History load failed:', err);
+    listWrap.innerHTML = `<div class="empty-history"><p>Could not load history: ${err.message}</p></div>`;
+  }
+}
+
+function renderHistoryList(rows){
+  const listWrap = document.getElementById('historyListWrap');
+  const statsWrap = document.getElementById('historyStatsWrap');
+
+  if(!rows || rows.length === 0){
+    statsWrap.innerHTML = '';
+    listWrap.innerHTML = `
+      <div class="empty-history">
+        <div class="big-emoji">🗒️</div>
+        <p>No attempts yet. Take a mock test and your results will show up here.</p>
+      </div>`;
+    return;
+  }
+
+  const totalAttempts = rows.length;
+  const avgScore = rows.reduce((s,r)=>s+Number(r.total_score),0) / totalAttempts;
+  const bestScore = Math.max(...rows.map(r=>Number(r.total_score)));
+  const totalCorrect = rows.reduce((s,r)=>s+r.correct_count,0);
+  const totalIncorrect = rows.reduce((s,r)=>s+r.incorrect_count,0);
+  const overallAccuracy = (totalCorrect+totalIncorrect) > 0 ? Math.round((totalCorrect/(totalCorrect+totalIncorrect))*100) : 0;
+
+  statsWrap.innerHTML = `
+    <div class="history-stats">
+      <div class="stat-box"><div class="num">${totalAttempts}</div><div class="lab">Attempts</div></div>
+      <div class="stat-box"><div class="num">${avgScore.toFixed(1)}</div><div class="lab">Average Score</div></div>
+      <div class="stat-box green"><div class="num">${bestScore.toFixed(1)}</div><div class="lab">Best Score</div></div>
+      <div class="stat-box"><div class="num">${overallAccuracy}%</div><div class="lab">Overall Accuracy</div></div>
+    </div>`;
+
+  listWrap.innerHTML = rows.map(r => {
+    const date = new Date(r.created_at);
+    const dateStr = date.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+    const timeStr = date.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+    const attempted = r.correct_count + r.incorrect_count;
+    const acc = attempted>0 ? Math.round((r.correct_count/attempted)*100) : 0;
+    const mins = Math.floor(r.time_taken_seconds/60), secs = r.time_taken_seconds%60;
+    return `
+      <div class="hist-card">
+        <div class="hc-left">
+          <div class="hc-title">${r.paper_title}</div>
+          <div class="hc-date">${dateStr} • ${timeStr}</div>
+        </div>
+        <div class="hc-mid">
+          <span>✅ <b>${r.correct_count}</b> correct</span>
+          <span>❌ <b>${r.incorrect_count}</b> incorrect</span>
+          <span>⏭ <b>${r.skipped_count}</b> skipped</span>
+          <span>🎯 <b>${acc}%</b> accuracy</span>
+          <span>⏱ <b>${mins}m ${secs}s</b></span>
+        </div>
+        <div class="hc-score">${Number(r.total_score).toFixed(1)}<small>/ 200</small></div>
+      </div>`;
+  }).join('');
+}
+
 /* ---------- Keyboard shortcuts (1-4 to select options, arrows to navigate) ---------- */
 document.addEventListener('keydown', (e) => {
   if(document.getElementById('screen-exam').classList.contains('hidden')) return;
@@ -762,6 +1176,8 @@ window.addEventListener('beforeunload', (e) => {
 
 /* ---------- Init ---------- */
 renderPaperGrid();
+renderUserBar();
+restoreSession();
 showScreen('screen-home');
 </script>
 

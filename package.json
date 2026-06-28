@@ -1,0 +1,9 @@
+{
+  "name": "ssc-cgl-mock-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SSC CGL Tier-I mock test with Supabase-backed result history",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4"
+  }
+}
