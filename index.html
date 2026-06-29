@@ -414,7 +414,7 @@
       </ul>
     </div>
 
-    <footer class="endnote"><p>&copy; 2026 Faisal Naseer. All rights reserved.</p></footer>
+    <footer class="endnote">Built for personal practice • Questions sourced from your uploaded solved papers</footer>
   </div>
 
   <!-- ================= SCREEN 2: INSTRUCTIONS ================= -->
@@ -595,12 +595,16 @@
 <script src="data_paper1.js"></script>
 <script src="data_paper2.js"></script>
 <script src="data_paper3.js"></script>
+<script src="data_paper4.js"></script>
+<script src="data_paper5.js"></script>
+<script src="data_paper6.js"></script>
 <script>
 // ============================================================
 // SUPABASE CONFIG — fill these in (see README for instructions)
 // ============================================================
 const SUPABASE_URL = "https://rspxtkfkffpgbuqgdcvx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzcHh0a2ZrZmZwZ2J1cWdkY3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzM4NzgsImV4cCI6MjA5ODAwOTg3OH0.2yk7QonYaRmHZIGoFxKZiRvWeDWtUDrbanvg3hxqTvU";
+
 
 let supabaseClient = null;
 let currentUser = null; // { id, email } or null = guest mode
@@ -614,7 +618,7 @@ if (SUPABASE_URL && SUPABASE_URL.indexOf('YOUR_SUPABASE') === -1) {
 /* ============================================================
    SSC CGL MOCK TEST ENGINE
    ============================================================ */
-const ALL_PAPERS = [PAPER1, PAPER2, PAPER3];
+const ALL_PAPERS = [PAPER1, PAPER2, PAPER3, PAPER4, PAPER5, PAPER6];
 const SECTION_DURATION_SECONDS = 15 * 60; // 15 min per section (new 2025 SSC CGL pattern)
 const DURATION_SECONDS = SECTION_DURATION_SECONDS * 4; // 60 min total across 4 sections
 const MARK_CORRECT = 2;
